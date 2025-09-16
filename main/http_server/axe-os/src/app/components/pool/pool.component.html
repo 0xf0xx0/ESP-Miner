@@ -1,36 +1,35 @@
 <form [formGroup]="form" *ngIf="form">
     <div class="card">
         <ng-container *ngFor="let pool of pools">
-            <h2 *ngIf="pool === 'stratum'">Pool Configuration</h2>
-            <h2 *ngIf="pool === 'fallbackStratum'" class="mt-5">Fallback Pool Configuration</h2>
+            <h2>Pool {{pool}} Configuration</h2>
 
             <div class="card">
                 <div class="field grid p-fluid">
-                    <label [htmlFor]="pool + 'URL'" class="col-12 md:col-2 md:mb-0 md:pb-4">Stratum Host</label>
+                    <label [htmlFor]="'stratum' + pool + 'URL'" class="col-12 md:col-2 md:mb-0 md:pb-4">Stratum Host</label>
                     <div class="col-12 md:col-10">
-                        <input pInputText type="text" [id]="pool + 'URL'" [formControlName]="pool + 'URL'" />
+                        <input pInputText type="text" [id]="'stratum' + pool + 'URL'" [formControlName]="pool + 'URL'" />
                         <small>Do not include 'stratum+tcp://' or port.</small>
                     </div>
                 </div>
                 <div class="field grid p-fluid">
-                    <label [htmlFor]="pool + 'Port'" class="col-12 md:col-2 md:mb-0">Stratum Port</label>
+                    <label [htmlFor]="'stratum' + pool + 'Port'" class="col-12 md:col-2 md:mb-0">Stratum Port</label>
                     <div class="col-12 md:col-10">
-                        <input pInputText [id]="pool + 'Port'" [formControlName]="pool + 'Port'" type="number" />
+                        <input pInputText [id]="'stratum' + pool + 'Port'" [formControlName]="pool + 'Port'" type="number" />
                     </div>
                 </div>
                 <div class="field grid p-fluid">
-                    <label [htmlFor]="pool + 'User'" class="col-12 md:col-2 md:mb-0">User</label>
+                    <label [htmlFor]="'stratum' + pool + 'User'" class="col-12 md:col-2 md:mb-0">User</label>
                     <div class="col-12 md:col-10">
-                        <input pInputText [id]="pool + 'User'" [formControlName]="pool + 'User'" type="text" />
+                        <input pInputText [id]="'stratum' + pool + 'User'" [formControlName]="pool + 'User'" type="text" />
                     </div>
                 </div>
                 <div class="field grid p-fluid">
-                    <label [htmlFor]="pool + 'Password'" class="col-12 md:col-2 md:mb-0">Password</label>
+                    <label [htmlFor]="'stratum' + pool + 'Password'" class="col-12 md:col-2 md:mb-0">Password</label>
                     <div class="col-12 md:col-10 p-input-icon-right">
-                        <i *ngIf="form.get(pool + 'Password')?.dirty" class="pi cursor-pointer"
+                        <i *ngIf="form.get('stratum' + pool + 'Password')?.dirty" class="pi cursor-pointer"
                         [ngClass]="{'pi-eye': !showPassword[pool], 'pi-eye-slash': showPassword[pool]}"
                         (click)="showPassword[pool] = !showPassword[pool]"></i>
-                        <input pInputText [id]="pool + 'Password'" [formControlName]="pool + 'Password'"
+                        <input pInputText [id]="'stratum' + pool + 'Password'" [formControlName]="pool + 'Password'"
                             [type]="showPassword[pool] ? 'text' : 'password'" />
                     </div>
                 </div>
@@ -45,22 +44,22 @@
                     </legend>
 
                     <div *ngIf="showAdvancedOptions[pool]" class="field grid p-fluid mt-4">
-                        <label [htmlFor]="pool + 'SuggestedDifficulty'" class="col-12 md:col-2 md:mb-0">
+                        <label [htmlFor]="'stratum' + pool + 'SuggestedDifficulty'" class="col-12 md:col-2 md:mb-0">
                             Suggested <span class="white-space-nowrap">
                                 Difficulty
                                 <i class="pi pi-info-circle text-xs px-1" pTooltip="Used to indicate a preference for share difficulty to the pool. Servers are not required to honour this request, even if they support the stratum method."></i>
                             </span>
                         </label>
                         <div class="col-12 md:col-10">
-                            <input pInputText [id]="pool + 'SuggestedDifficulty'" [formControlName]="pool + 'SuggestedDifficulty'" type="number" />
+                            <input pInputText [id]="'stratum' + pool + 'SuggestedDifficulty'" [formControlName]="pool + 'SuggestedDifficulty'" type="number" />
                         </div>
                     </div>
                     <div *ngIf="showAdvancedOptions[pool]" class="field-checkbox grid mb-0">
                         <div class="col-1 md:col-10 md:flex-order-2">
-                            <p-checkbox [name]="pool + 'ExtranonceSubscribe'" [inputId]="pool + 'ExtranonceSubscribe'" [formControlName]="pool + 'ExtranonceSubscribe'"
+                            <p-checkbox [name]="'stratum' + pool + 'ExtranonceSubscribe'" [inputId]="pool + 'ExtranonceSubscribe'" [formControlName]="pool + 'ExtranonceSubscribe'"
                                 [binary]="true"></p-checkbox>
                         </div>
-                        <label [htmlFor]="pool + 'ExtranonceSubscribe'" class="col-11 m-0 pl-3 md:col-2 md:flex-order-1 md:p-2">
+                        <label [htmlFor]="'stratum' + pool + 'ExtranonceSubscribe'" class="col-11 m-0 pl-3 md:col-2 md:flex-order-1 md:p-2">
                             Enable Extranonce <span class="white-space-nowrap">
                                 Subscribe
                                 <i class="pi pi-info-circle text-xs px-1" pTooltip="Indicates to the server that the client supports the mining.set_extranonce method. Required by some pools, check the pool documentation."></i>

@@ -276,11 +276,11 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.maxFrequency = Math.max(800, info.frequency);
 
         const isFallback = info.isUsingFallbackStratum;
-
+        const activePool = info.stratumPools[info.activePoolIndex]
         this.activePoolLabel = isFallback ? 'Fallback' : 'Primary';
-        this.activePoolURL = isFallback ? info.fallbackStratumURL : info.stratumURL;
-        this.activePoolUser = isFallback ? info.fallbackStratumUser : info.stratumUser;
-        this.activePoolPort = isFallback ? info.fallbackStratumPort : info.stratumPort;
+        this.activePoolURL = activePool.url;
+        this.activePoolUser = activePool.user;
+        this.activePoolPort = activePool.port;
         this.responseTime = info.responseTime;
       }),
       map(info => {
@@ -305,8 +305,9 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     this.quickLink$ = this.info$.pipe(
       map(info => {
-        const url = info.isUsingFallbackStratum ? info.fallbackStratumURL : info.stratumURL;
-        const user = info.isUsingFallbackStratum ? info.fallbackStratumUser : info.stratumUser;
+        const activePool = info.stratumPools[info.activePoolIndex]
+        const url = activePool.url;
+        const user = activePool.user;
         return this.quickLinkService.getQuickLink(url, user);
       })
     );

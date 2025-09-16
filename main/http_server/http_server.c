@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 
 #include "esp_chip_info.h"
+#include "esp_err.h"
 #include "esp_http_server.h"
 #include "esp_log.h"
 #include "esp_random.h"
@@ -526,6 +527,7 @@ static esp_err_t PATCH_update_settings(httpd_req_t * req)
     if ((item = cJSON_GetObjectItem(root, "fallbackStratumPort")) != NULL) {
         nvs_config_set_u16(NVS_CONFIG_FALLBACK_STRATUM_PORT, item->valueint);
     }
+
     if (cJSON_IsString(item = cJSON_GetObjectItem(root, "ssid"))) {
         nvs_config_set_string(NVS_CONFIG_WIFI_SSID, item->valuestring);
     }

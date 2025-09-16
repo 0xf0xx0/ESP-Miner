@@ -5,7 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { LoadingService } from 'src/app/services/loading.service';
 import { SystemService } from 'src/app/services/system.service';
 
-type PoolType = 'stratum' | 'fallbackStratum';
+type PoolType = '1' | '2';
 
 @Component({
   selector: 'app-pool',
@@ -16,9 +16,9 @@ export class PoolComponent implements OnInit {
   public form!: FormGroup;
   public savedChanges: boolean = false;
 
-  public pools: PoolType[] = ['stratum', 'fallbackStratum'];
-  public showPassword = {'stratum': false, 'fallbackStratum': false};
-  public showAdvancedOptions = {'stratum': false, 'fallbackStratum': false};
+  public pools: PoolType[] = ['1', '2'];
+  public showPassword = {'1': false, '2': false};
+  public showAdvancedOptions = {'1': false, '2': false};
 
   @Input() uri = '';
 
@@ -35,37 +35,28 @@ export class PoolComponent implements OnInit {
         this.loadingService.lockUIUntilComplete()
       )
       .subscribe(info => {
-        this.form = this.fb.group({
-          stratumURL: [info.stratumURL, [
+        let formObj: any = {}
+        for (const idx in info.stratumPools) {
+          const pool = info.stratumPools[idx]
+          formObj[`stratum${idx}URL`] = [pool.url,[
             Validators.required,
             Validators.pattern(/^(?!.*stratum\+tcp:\/\/).*$/),
             Validators.pattern(/^[^:]*$/),
-          ]],
-          stratumPort: [info.stratumPort, [
+          ]]
+          formObj[`stratum${idx}Port`] = [pool.port, [
             Validators.required,
             Validators.pattern(/^[^:]*$/),
             Validators.min(0),
             Validators.max(65535)
-          ]],
-          stratumExtranonceSubscribe: [info.stratumExtranonceSubscribe == 1, [Validators.required]],
-          stratumSuggestedDifficulty: [info.stratumSuggestedDifficulty, [Validators.required]],
-          stratumUser: [info.stratumUser, [Validators.required]],
-          stratumPassword: ['*****', [Validators.required]],
+          ]]
+          formObj[`stratum${idx}ExtranonceSubscribe`] = [pool.extranonceSubscribe, [Validators.required]]
+          formObj[`stratum${idx}SuggestedDifficulty`] = [pool.suggestedDifficulty, [Validators.required]]
+          formObj[`stratum${idx}User`] = [pool.user, [Validators.required]]
+          formObj[`stratum${idx}Password`] = ['*****', [Validators.required]]
 
-          fallbackStratumURL: [info.fallbackStratumURL, [
-            Validators.pattern(/^(?!.*stratum\+tcp:\/\/).*$/),
-          ]],
-          fallbackStratumPort: [info.fallbackStratumPort, [
-            Validators.required,
-            Validators.pattern(/^[^:]*$/),
-            Validators.min(0),
-            Validators.max(65535)
-          ]],
-          fallbackStratumExtranonceSubscribe: [info.fallbackStratumExtranonceSubscribe == 1, [Validators.required]],
-          fallbackStratumSuggestedDifficulty: [info.fallbackStratumSuggestedDifficulty, [Validators.required]],
-          fallbackStratumUser: [info.fallbackStratumUser, [Validators.required]],
-          fallbackStratumPassword: ['*****', [Validators.required]]
-        });
+          this.pools.push(idx as PoolType)
+        }
+        this.form = this.fb.group(formObj);
       });
   }
 

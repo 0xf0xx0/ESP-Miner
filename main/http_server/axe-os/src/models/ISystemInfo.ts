@@ -2,7 +2,13 @@ interface ISharesRejectedStat {
     message: string;
     count: number;
 }
-
+interface IStratumConfig {
+  url: string,
+  port: number,
+  user: string,
+  suggestedDifficulty: number,
+  extranonceSubscribe: number,
+}
 export interface ISystemInfo {
     display: string;
     rotation: number;
@@ -30,20 +36,12 @@ export interface ISystemInfo {
     apEnabled: number,
     sharesAccepted: number,
     sharesRejected: number,
-    sharesRejectedReasons: ISharesRejectedStat[];
+    sharesRejectedReasons: ISharesRejectedStat[],
     uptimeSeconds: number,
     smallCoreCount: number,
     ASICModel: string,
-    stratumURL: string,
-    stratumPort: number,
-    stratumUser: string,
-    stratumSuggestedDifficulty: number,
-    stratumExtranonceSubscribe: number,
-    fallbackStratumURL: string,
-    fallbackStratumPort: number,
-    fallbackStratumUser: string,
-    fallbackStratumSuggestedDifficulty: number,
-    fallbackStratumExtranonceSubscribe: number,
+    stratumPools: IStratumConfig[],
+    activePoolIndex: number,
     poolDifficulty: number,
     responseTime: number,
     isUsingFallbackStratum: boolean,
