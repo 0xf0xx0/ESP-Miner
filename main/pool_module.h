@@ -35,6 +35,9 @@ typedef struct
 
     // A flag indicating if the system is currently using the fallback pool instead of the main one.
     uint8_t default_pool_idx;
+
+    // The number of configured pools.
+    uint8_t pools_count;
 }PoolModule;
 
 extern PoolModule POOL_MODULE;

@@ -689,16 +689,24 @@ static esp_err_t GET_system_info(httpd_req_t * req)
     cJSON_AddNumberToObject(root, "uptimeSeconds", (esp_timer_get_time() - SYSTEM_MODULE.start_time) / 1000000);
     cJSON_AddNumberToObject(root, "smallCoreCount", DEVICE_CONFIG.family.asic.small_core_count);
     cJSON_AddStringToObject(root, "ASICModel", DEVICE_CONFIG.family.asic.name);
-    cJSON_AddStringToObject(root, "stratumURL", stratumURL);
-    cJSON_AddNumberToObject(root, "stratumPort", nvs_config_get_u16(NVS_CONFIG_STRATUM_PORT, CONFIG_STRATUM_PORT));
-    cJSON_AddStringToObject(root, "stratumUser", stratumUser);
-    cJSON_AddNumberToObject(root, "stratumSuggestedDifficulty", nvs_config_get_u16(NVS_CONFIG_STRATUM_DIFFICULTY, CONFIG_STRATUM_DIFFICULTY));
-    cJSON_AddNumberToObject(root, "stratumExtranonceSubscribe", nvs_config_get_u16(NVS_CONFIG_STRATUM_EXTRANONCE_SUBSCRIBE, STRATUM_EXTRANONCE_SUBSCRIBE));
-    cJSON_AddStringToObject(root, "fallbackStratumURL", fallbackStratumURL);
-    cJSON_AddNumberToObject(root, "fallbackStratumPort", nvs_config_get_u16(NVS_CONFIG_FALLBACK_STRATUM_PORT, CONFIG_FALLBACK_STRATUM_PORT));
-    cJSON_AddStringToObject(root, "fallbackStratumUser", fallbackStratumUser);
-    cJSON_AddNumberToObject(root, "fallbackStratumSuggestedDifficulty", nvs_config_get_u16(NVS_CONFIG_FALLBACK_STRATUM_DIFFICULTY, CONFIG_FALLBACK_STRATUM_DIFFICULTY));
-    cJSON_AddNumberToObject(root, "fallbackStratumExtranonceSubscribe", nvs_config_get_u16(NVS_CONFIG_FALLBACK_STRATUM_EXTRANONCE_SUBSCRIBE, FALLBACK_STRATUM_EXTRANONCE_SUBSCRIBE));
+
+    cJSON *pool_array = cJSON_CreateArray();
+    cJSON_AddItemToObject(root, "stratumPools", pool_array);
+    for (int i = 0; i < POOL_MODULE.pools_count; i++) {
+        stratum_pool pool = POOL_MODULE.pools[i];
+        if (pool.url == NULL || pool.url[0] == '\0') {
+            continue;
+        }
+        cJSON * pool_obj = cJSON_CreateObject();
+        cJSON_AddStringToObject(pool_obj, "url", pool.url);
+        cJSON_AddNumberToObject(pool_obj, "port", pool.port);
+        cJSON_AddStringToObject(pool_obj, "user", pool.user);
+        cJSON_AddNumberToObject(pool_obj, "suggestedDifficulty", pool.difficulty);
+        cJSON_AddBoolToObject(pool_obj, "extranonceSubscribe", pool.extranonce_subscribe);
+        cJSON_AddItemToArray(pool_array, pool_obj);
+    }
+    cJSON_AddNumberToObject(root, "activePoolIndex", POOL_MODULE.active_pool_idx);
+
     cJSON_AddNumberToObject(root, "responseTime", POOL_MODULE.response_time);
 
     cJSON_AddStringToObject(root, "version", esp_app_get_description()->version);

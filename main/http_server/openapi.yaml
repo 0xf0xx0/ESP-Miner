@@ -176,21 +176,6 @@ components:
         current:
           type: number
           description: Current draw in milliamps
-        fallbackStratumExtranonceSubscribe:
-          type: boolean
-          description: Enable fallback pool extranonce subscription
-        fallbackStratumPort:
-          type: number
-          description: Fallback stratum server port
-        fallbackStratumSuggestedDifficulty:
-          type: number
-          description: Fallback pool suggested difficulty
-        fallbackStratumURL:
-          type: string
-          description: Fallback stratum server URL
-        fallbackStratumUser:
-          type: string
-          description: Fallback stratum username
         fanrpm:
           type: number
           description: Current fan speed in RPM
@@ -257,6 +242,11 @@ components:
         runningPartition:
           type: string
           description: Currently active OTA partition
+        stratumPools:
+          type: array
+          description: Configured mining pools
+          items:
+            $ref: '#/components/schemas/PoolConfig'
         sharesAccepted:
           type: number
           description: Number of accepted shares
@@ -274,21 +264,6 @@ components:
         ssid:
           type: string
           description: Connected WiFi network SSID
-        stratumExtranonceSubscribe:
-          type: boolean
-          description: Enable pool extranonce subscription
-        stratumPort:
-          type: number
-          description: Primary stratum server port
-        stratumSuggestedDifficulty:
-          type: number
-          description: Pool suggested difficulty
-        stratumURL:
-          type: string
-          description: Primary stratum server URL
-        stratumUser:
-          type: string
-          description: Primary stratum username
         temp:
           type: number
           description: Average chip temperature
@@ -331,6 +306,33 @@ components:
         networkDifficulty:
           type: string
           description: Current network difficulty in human-readable format
+
+    PoolConfig:
+      type: object
+      required:
+        - url
+        - port
+        - user
+        - suggestedDifficulty
+        - extranonceSubscribe
+      properties:
+        url:
+          type: string
+          description: Stratum server URL
+          examples:
+            - "stratum+tcp://pool.example.com"
+        port:
+          type: number
+          description: Stratum server port
+        user:
+          type: string
+          description: Stratum username
+        suggestedDifficulty:
+          type: number
+          description: Pool suggested difficulty
+        extranonceSubscribe:
+          type: boolean
+          description: Enable pool extranonce subscription
 
     Settings:
       type: object

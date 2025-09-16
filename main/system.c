@@ -114,6 +114,7 @@ void SYSTEM_init_system()
 
     // set fallback to false.
     POOL_MODULE.default_pool_idx = 0;
+    POOL_MODULE.pools_count = STRATUM_POOL_CAPACITY;
 
     // Initialize overheat_mode
     STATE_MODULE.overheat_mode = nvs_config_get_u16(NVS_CONFIG_OVERHEAT_MODE, 0);
