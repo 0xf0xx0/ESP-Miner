@@ -85,35 +85,32 @@ void SYSTEM_init_system()
     lastClockSync = 0;
     STATE_MODULE.FOUND_BLOCK = false;
     
-    // set the pool url
-    POOL_MODULE.pools[0].url = nvs_config_get_string(NVS_CONFIG_STRATUM_URL, CONFIG_STRATUM_URL);
-    POOL_MODULE.pools[1].url = nvs_config_get_string(NVS_CONFIG_FALLBACK_STRATUM_URL, CONFIG_FALLBACK_STRATUM_URL);
+    // load the saved pools
+    for (int i = 0; i < STRATUM_POOL_CAPACITY; i++) {
+        // copy and update all the prefixes from `stratumKEY` to `stratumKEYN`
+        char * stratumurlkey = nvs_config_indexed_key(NVS_CONFIG_STRATUM_URL, i);
+        char * stratumportkey = nvs_config_indexed_key(NVS_CONFIG_STRATUM_PORT, i);
+        char * stratumuserkey = nvs_config_indexed_key(NVS_CONFIG_STRATUM_USER, i);
+        char * stratumpasskey = nvs_config_indexed_key(NVS_CONFIG_STRATUM_PASS, i);
+        char * stratumdifficultykey = nvs_config_indexed_key(NVS_CONFIG_STRATUM_DIFFICULTY, i);
+        char * stratumxnsubkey = nvs_config_indexed_key(NVS_CONFIG_STRATUM_EXTRANONCE_SUBSCRIBE, i);
 
-    // set the pool port
-    POOL_MODULE.pools[0].port = nvs_config_get_u16(NVS_CONFIG_STRATUM_PORT, CONFIG_STRATUM_PORT);
-    POOL_MODULE.pools[1].port = nvs_config_get_u16(NVS_CONFIG_FALLBACK_STRATUM_PORT, CONFIG_FALLBACK_STRATUM_PORT);
+        POOL_MODULE.pools[i].url = nvs_config_get_string(stratumurlkey, CONFIG_STRATUM_URL);
+        // set the pool port
+        POOL_MODULE.pools[i].port = nvs_config_get_u16(stratumportkey, CONFIG_STRATUM_PORT);
+        // set the pool user
+        POOL_MODULE.pools[i].user = nvs_config_get_string(stratumuserkey, CONFIG_STRATUM_USER);
+        // set the pool password
+        POOL_MODULE.pools[i].pass = nvs_config_get_string(stratumpasskey, CONFIG_STRATUM_PW);
+        // set the pool difficulty
+        POOL_MODULE.pools[i].difficulty = nvs_config_get_u16(stratumdifficultykey, CONFIG_STRATUM_DIFFICULTY);
+        // set the pool extranonce subscribe
+        POOL_MODULE.pools[i].extranonce_subscribe = nvs_config_get_u16(stratumxnsubkey, STRATUM_EXTRANONCE_SUBSCRIBE);
+}
 
-    // set the pool user
-    POOL_MODULE.pools[0].user = nvs_config_get_string(NVS_CONFIG_STRATUM_USER, CONFIG_STRATUM_USER);
-    POOL_MODULE.pools[1].user = nvs_config_get_string(NVS_CONFIG_FALLBACK_STRATUM_USER, CONFIG_FALLBACK_STRATUM_USER);
-
-    // set the pool password
-    POOL_MODULE.pools[0].pass = nvs_config_get_string(NVS_CONFIG_STRATUM_PASS, CONFIG_STRATUM_PW);
-    POOL_MODULE.pools[1].pass = nvs_config_get_string(NVS_CONFIG_FALLBACK_STRATUM_PASS, CONFIG_FALLBACK_STRATUM_PW);
-
-    // set the pool difficulty
-    POOL_MODULE.pools[0].difficulty = nvs_config_get_u16(NVS_CONFIG_STRATUM_DIFFICULTY, CONFIG_STRATUM_DIFFICULTY);
-    POOL_MODULE.pools[1].difficulty =
-        nvs_config_get_u16(NVS_CONFIG_FALLBACK_STRATUM_DIFFICULTY, CONFIG_FALLBACK_STRATUM_DIFFICULTY);
-
-    // set the pool extranonce subscribe
-    POOL_MODULE.pools[0].extranonce_subscribe =
-        nvs_config_get_u16(NVS_CONFIG_STRATUM_EXTRANONCE_SUBSCRIBE, STRATUM_EXTRANONCE_SUBSCRIBE);
-    POOL_MODULE.pools[1].extranonce_subscribe =
-        nvs_config_get_u16(NVS_CONFIG_FALLBACK_STRATUM_EXTRANONCE_SUBSCRIBE, FALLBACK_STRATUM_EXTRANONCE_SUBSCRIBE);
-
-    // set fallback to false.
+    // Set the first pool as the default, for fallback logic
     POOL_MODULE.default_pool_idx = 0;
+    POOL_MODULE.active_pool_idx = 0;
     POOL_MODULE.pools_count = STRATUM_POOL_CAPACITY;
 
     // Initialize overheat_mode

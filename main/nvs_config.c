@@ -1,6 +1,7 @@
 #include "nvs_config.h"
 #include "esp_log.h"
 #include "nvs.h"
+#include <stdio.h>
 #include <string.h>
 
 #define NVS_CONFIG_NAMESPACE "main"
@@ -8,6 +9,14 @@
 #define FLOAT_STR_LEN 32
 
 static const char * TAG = "nvs_config";
+
+char * nvs_config_indexed_key(const char * key, const uint16_t index) {
+    size_t size = strlen(key)+1+5; // add 5 for max uint16 size of 5 places
+    char * out = malloc(size);
+
+    snprintf(out, size, "%s%d", key, index);
+    return out;
+}
 
 char * nvs_config_get_string(const char * key, const char * default_value)
 {
@@ -52,6 +61,43 @@ void nvs_config_set_string(const char * key, const char * value)
     err = nvs_set_str(handle, key, value);
     if (err != ESP_OK) {
         ESP_LOGW(TAG, "Could not write nvs key: %s, value: %s", key, value);
+    }
+
+    nvs_close(handle);
+}
+
+uint8_t nvs_config_get_u8(const char * key, const uint8_t default_value)
+{
+    nvs_handle handle;
+    esp_err_t err;
+    err = nvs_open(NVS_CONFIG_NAMESPACE, NVS_READONLY, &handle);
+    if (err != ESP_OK) {
+        return default_value;
+    }
+
+    uint8_t out;
+    err = nvs_get_u8(handle, key, &out);
+    nvs_close(handle);
+
+    if (err != ESP_OK) {
+        return default_value;
+    }
+    return out;
+}
+
+void nvs_config_set_u8(const char * key, const uint8_t value)
+{
+    nvs_handle handle;
+    esp_err_t err;
+    err = nvs_open(NVS_CONFIG_NAMESPACE, NVS_READWRITE, &handle);
+    if (err != ESP_OK) {
+        ESP_LOGW(TAG, "Could not open nvs");
+        return;
+    }
+
+    err = nvs_set_u8(handle, key, value);
+    if (err != ESP_OK) {
+        ESP_LOGW(TAG, "Could not write nvs key: %s, value: %u", key, value);
     }
 
     nvs_close(handle);

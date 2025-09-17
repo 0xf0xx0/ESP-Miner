@@ -58,9 +58,11 @@
 #define NVS_CONFIG_INA260 "INA260"
 #define NVS_CONFIG_TPS546 "TPS546"
 #define NVS_CONFIG_POWER_CONSUMPTION_TARGET "power_cons_tgt"
-
+char * nvs_config_indexed_key(const char * key, const uint16_t index);
 char * nvs_config_get_string(const char * key, const char * default_value);
 void nvs_config_set_string(const char * key, const char * default_value);
+uint8_t nvs_config_get_u8(const char * key, const uint8_t default_value);
+void nvs_config_set_u8(const char * key, const uint8_t value);
 uint16_t nvs_config_get_u16(const char * key, const uint16_t default_value);
 void nvs_config_set_u16(const char * key, const uint16_t value);
 int32_t nvs_config_get_i32(const char * key, const int32_t default_value);
