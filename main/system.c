@@ -95,13 +95,13 @@ void SYSTEM_init_system()
         char * stratumdifficultykey = nvs_config_indexed_key(NVS_CONFIG_STRATUM_DIFFICULTY, i);
         char * stratumxnsubkey = nvs_config_indexed_key(NVS_CONFIG_STRATUM_EXTRANONCE_SUBSCRIBE, i);
 
-        POOL_MODULE.pools[i].url = nvs_config_get_string(stratumurlkey, CONFIG_STRATUM_URL);
+        POOL_MODULE.pools[i].url = nvs_config_get_string(stratumurlkey, i == 0 ? CONFIG_STRATUM_URL : "");
         // set the pool port
-        POOL_MODULE.pools[i].port = nvs_config_get_u16(stratumportkey, CONFIG_STRATUM_PORT);
+        POOL_MODULE.pools[i].port = nvs_config_get_u16(stratumportkey, i == 0 ? CONFIG_STRATUM_PORT : 0);
         // set the pool user
-        POOL_MODULE.pools[i].user = nvs_config_get_string(stratumuserkey, CONFIG_STRATUM_USER);
+        POOL_MODULE.pools[i].user = nvs_config_get_string(stratumuserkey, i == 0 ? CONFIG_STRATUM_USER : "");
         // set the pool password
-        POOL_MODULE.pools[i].pass = nvs_config_get_string(stratumpasskey, CONFIG_STRATUM_PW);
+        POOL_MODULE.pools[i].pass = nvs_config_get_string(stratumpasskey, i == 0 ? CONFIG_STRATUM_PW : "");
         // set the pool difficulty
         POOL_MODULE.pools[i].difficulty = nvs_config_get_u16(stratumdifficultykey, CONFIG_STRATUM_DIFFICULTY);
         // set the pool extranonce subscribe
