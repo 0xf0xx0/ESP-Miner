@@ -31,6 +31,7 @@
 #include "log_buffer.h"
 #include "setup_ble.h"
 #include "esp_ota_ops.h"
+#include "esp_netif_sntp.h"
 
 static GlobalState GLOBAL_STATE;
 
@@ -154,6 +155,14 @@ void app_main(void)
 
     if (!GLOBAL_STATE.SELF_TEST_MODULE.is_active) {
         wifi_init(&GLOBAL_STATE);
+        ESP_LOGI(TAG, "Starting SNTP");
+        esp_sntp_config_t config = ESP_NETIF_SNTP_DEFAULT_CONFIG("pool.ntp.org");
+        config.start = true;
+        config.smooth_sync = true;
+        config.server_from_dhcp = true;
+        config.renew_servers_after_new_IP = true;
+        config.ip_event_to_renew = IP_EVENT_STA_GOT_IP;
+        esp_netif_sntp_init(&config);
     }
 
     esp_err_t system_init_ret = SYSTEM_init_peripherals(&GLOBAL_STATE);
@@ -207,7 +216,21 @@ void app_main(void)
     // Connected to WiFi: tear down the setup BLE service to free the radio.
     setup_ble_stop();
 
+    int retry = 0;
+    const int retry_count = 15;
+    while (esp_netif_sntp_sync_wait(2000 / portTICK_PERIOD_MS) == ESP_ERR_TIMEOUT && ++retry < retry_count) {
+        ESP_LOGI(TAG, "Waiting for system time to be set... (%d/%d)", retry, retry_count);
+    }
+
     miner_job_pool_init();
+
+    // The self-test feeds create_jobs_task a hardcoded stratum V1 mock job.
+    // SYSTEM_init_system() picked the protocol from the configured pool, so pin
+    // V1 here — before create_jobs_task latches it — or an SV2-configured device
+    // would cast the mock mining_notify to sv2_job_t.
+    if (GLOBAL_STATE.SELF_TEST_MODULE.is_active) {
+        GLOBAL_STATE.stratum_protocol = STRATUM_PROTOCOL_V1;
+    }
 
     if (system_init_ret == ESP_OK) {
         if (asic_initialize(&GLOBAL_STATE, ASIC_INIT_COLD_BOOT, 0) == 0) {
