@@ -200,6 +200,7 @@ void SYSTEM_init_system(GlobalState * GLOBAL_STATE)
     module->best_nonce_diff = nvs_config_get_u64(NVS_CONFIG_BEST_DIFF);
     module->best_session_nonce_diff = 0;
     module->start_time_us = esp_timer_get_time();
+    module->lastClockSync = 0;
     module->block_found = 0;
     module->show_new_block = false;
 
@@ -460,6 +461,11 @@ void SYSTEM_notify_rejected_share(GlobalState * GLOBAL_STATE, char * error_msg)
 void SYSTEM_notify_new_ntime(GlobalState * GLOBAL_STATE, uint32_t ntime)
 {
     SystemModule * module = &GLOBAL_STATE->SYSTEM_MODULE;
+
+    // NTP handles sync itself
+    if (nvs_config_get_bool(NVS_CONFIG_USE_NTP)) {
+        return;
+    }
 
     // Hourly clock sync
     if (module->lastClockSync + (60 * 60) > ntime) {
