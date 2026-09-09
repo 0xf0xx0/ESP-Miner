@@ -457,6 +457,21 @@ void SYSTEM_notify_rejected_share(GlobalState * GLOBAL_STATE, char * error_msg)
             sizeof(module->rejected_reason_stats[0]), compare_rejected_reason_stats);
     }    
 }
+void SYSTEM_notify_new_ntime(GlobalState * GLOBAL_STATE, uint32_t ntime)
+{
+    SystemModule * module = &GLOBAL_STATE->SYSTEM_MODULE;
+
+    // Hourly clock sync
+    if (module->lastClockSync + (60 * 60) > ntime) {
+        return;
+    }
+    ESP_LOGI(TAG, "Syncing clock");
+    module->lastClockSync = ntime;
+    struct timeval tv;
+    tv.tv_sec = ntime;
+    tv.tv_usec = 0;
+    settimeofday(&tv, NULL);
+}
 
 // Reset decoded coinbase UI fields (scriptsig, coinbase values, outputs, block signals).
 // Note: block_height is intentionally NOT reset here; it is preserved as the "last known good"
