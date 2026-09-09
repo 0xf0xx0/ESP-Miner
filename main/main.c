@@ -230,14 +230,6 @@ void app_main(void)
 
     miner_job_pool_init();
 
-    // The self-test feeds create_jobs_task a hardcoded stratum V1 mock job.
-    // SYSTEM_init_system() picked the protocol from the configured pool, so pin
-    // V1 here — before create_jobs_task latches it — or an SV2-configured device
-    // would cast the mock mining_notify to sv2_job_t.
-    if (GLOBAL_STATE.SELF_TEST_MODULE.is_active) {
-        GLOBAL_STATE.stratum_protocol = STRATUM_PROTOCOL_V1;
-    }
-
     if (system_init_ret == ESP_OK) {
         if (asic_initialize(&GLOBAL_STATE, ASIC_INIT_COLD_BOOT, 0) == 0) {
             if (!GLOBAL_STATE.SELF_TEST_MODULE.is_active) {
