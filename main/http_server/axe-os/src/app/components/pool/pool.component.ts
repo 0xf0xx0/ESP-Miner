@@ -314,7 +314,7 @@ export class PoolComponent implements OnInit {
     const prim = this.form.get('primaryPoolIndex')?.value;
     const sec = this.form.get('secondaryPoolIndex')?.value;
     if (id === prim || id === sec) {
-      this.toastr.error('Cannot delete a pool that is currently selected as primary or fallback.');
+      this.toastr.error(this.i18n.t('errors.pool_delete_active'));
       return;
     }
 
